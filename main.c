@@ -140,6 +140,22 @@ void brushSort (int *a, size_t n)
 	}
 }
 
+void shellSort (int *a, size_t n)
+{
+    for (int s = n / 2; s > 0; s /= 2) 
+    {
+        for (int i = s; i < n; ++i) 
+        {
+            for (int j = i - s; j >= 0 && a[j] > a[j + s]; j -= s) 
+            {
+                int temp = a[j];
+                a[j] = a[j + s];
+                a[j + s] = temp;
+            }
+        }
+    }
+}
+
 void timeExperiment() 
 {
     // описание функций сортировки
@@ -148,7 +164,8 @@ void timeExperiment()
         {bubbleSort, "bubbleSort"},
         {selectionSort, "selectionSort"},
         {insertionSort, "insertionSort"},
-        {brushSort, "brushSort"}
+        {brushSort, "brushSort"},
+        {shellSort, "shellSort"}
         // вы добавите свои сортировки
     };
     const unsigned FUNCS_N = ARRAY_SIZE(sorts);
