@@ -119,6 +119,27 @@ void insertionSort (int *a, size_t n)
     }
 }
 
+void brushSort (int *a, size_t n)
+{
+    float factor = 1.25;
+	size_t step = n - 1;
+    
+	while (step >= 1)
+	{
+		for (size_t i = 0; i + step < n; i++)
+		{
+			if (a[i] > a[i + step])
+			{
+				int temp = a[i];
+                a[i] = a[i + step];
+                a[i + step] = temp;
+			}
+		}
+
+		step = (size_t)((float)step/factor);
+	}
+}
+
 void timeExperiment() 
 {
     // описание функций сортировки
@@ -127,6 +148,7 @@ void timeExperiment()
         {bubbleSort, "bubbleSort"},
         {selectionSort, "selectionSort"},
         {insertionSort, "insertionSort"},
+        {brushSort, "brushSort"}
         // вы добавите свои сортировки
     };
     const unsigned FUNCS_N = ARRAY_SIZE(sorts);
