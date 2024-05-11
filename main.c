@@ -37,6 +37,21 @@ double getTime()
     return (double) sort_time / CLOCKS_PER_SEC;
 }
 
+void checkTime (void(*sortFunc)(int *, size_t), 
+                void (*generateFunc)(int *, size_t), 
+                size_t size, 
+                char *experimentName) 
+{
+    static size_t runCounter = 1;
+
+    // генерация последовательности
+    static int innerBuffer[100000];
+    generateFunc(innerBuffer, size);
+
+    printf("Run #%zu| ", runCounter++);
+    printf("Name: %s\n", experimentName);
+}
+
 void generateOrderedArray (int *a, size_t n)
 {
     for(size_t i = 0; i < n; i++)
@@ -156,6 +171,45 @@ void shellSort (int *a, size_t n)
     }
 }
 
+void radixSort (int *a, size_t n)
+{
+    const size_t k = 4;
+    uint8_t d;
+    int *b = malloc(sizeof(int) * n),
+        *c = malloc(sizeof(int) * n);
+
+    for (size_t i = 1; i < k; i++)
+    {        
+        for (size_t j = 0; j < k - 1; j++)
+        {                      
+            c[j] = 0;
+        }
+
+        for (size_t j = 0; j < n - 1; j++)
+        {
+            d = digit(a[j], i);
+            c[d]++;
+        }
+        int count = 0;
+        
+        for (size_t j = 0; j < k - 1; j++)
+        {
+            int tmp = c[j];
+            c[j] = count;
+            count += tmp;
+        }
+
+        for (size_t j = 0; j < n - 1; j++)
+        {
+            d = digit(a[j], i);
+            b[c[d]] = a[j];
+            c[d]++;
+        }
+        memcpy(a, b, n);
+
+    }
+}
+
 void timeExperiment() 
 {
     // описание функций сортировки
@@ -165,7 +219,8 @@ void timeExperiment()
         {selectionSort, "selectionSort"},
         {insertionSort, "insertionSort"},
         {brushSort, "brushSort"},
-        {shellSort, "shellSort"}
+        {shellSort, "shellSort"},
+        {radixSort, "radixSort"}
         // вы добавите свои сортировки
     };
     const unsigned FUNCS_N = ARRAY_SIZE(sorts);
