@@ -82,13 +82,30 @@ void bubbleSort (int *a, size_t n)
     }
 }
 
+void selectionSort (int *a, size_t n)
+{
+    for (int i = 1; i < n; i++)
+    {
+        int newElement = a[i];
+        int location = i - 1;
+
+        while(location >= 0 && a[location] > newElement)
+        {
+            a[location + 1] = a[location];
+            location = location - 1;
+        }
+
+        a[location + 1] = newElement;
+    }
+}
+
 void timeExperiment() 
 {
     // описание функций сортировки
     SortFunc sorts[] = 
     {
         {bubbleSort, "bubbleSort"},
-        //{selectionSort, "selectionSort"},
+        {selectionSort, "selectionSort"},
         //{insertionSort, "insertionSort"},
         // вы добавите свои сортировки
     };
