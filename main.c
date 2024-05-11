@@ -99,6 +99,26 @@ void selectionSort (int *a, size_t n)
     }
 }
 
+void insertionSort (int *a, size_t n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        int minPosition = i;
+
+        for (int j = i + 1; j < n; j++)
+        {
+            if (a[minPosition] > a[j])
+            {
+                minPosition = j;
+            }
+        }
+
+        int tmp = a[minPosition];
+        a[minPosition] = a[i];
+        a[i] = tmp;
+    }
+}
+
 void timeExperiment() 
 {
     // описание функций сортировки
@@ -106,7 +126,7 @@ void timeExperiment()
     {
         {bubbleSort, "bubbleSort"},
         {selectionSort, "selectionSort"},
-        //{insertionSort, "insertionSort"},
+        {insertionSort, "insertionSort"},
         // вы добавите свои сортировки
     };
     const unsigned FUNCS_N = ARRAY_SIZE(sorts);
