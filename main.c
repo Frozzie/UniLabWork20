@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#define MAX_BUFFER_SIZE    100000
+#define MAX_BUFFER_SIZE    5000001
 
 #define TIME_TEST(testCode, time) \
 { \
@@ -76,55 +76,6 @@ void outputArrayHex(int *a, size_t n)
     printf("\n");
 }
 
-void checkTime (void(*sortFunc)(int *, size_t), 
-                void (*generateFunc)(int *, size_t), 
-                size_t size, 
-                char *experimentName) 
-{
-    static size_t runCounter = 1;
-
-    // генерация последовательности
-    static int innerBuffer[MAX_BUFFER_SIZE];
-    generateFunc(innerBuffer, size);
-
-    printf("Run #%zu| ", runCounter++);
-    printf("Name: %s\n", experimentName);
-    double time;
-    TIME_TEST(
-    {
-        sortFunc(innerBuffer, size);
-    }, time);
-
-    printf("Status: ");
-    if (isOrdered(innerBuffer, size)) 
-    {
-        printf("OK! Time: %.3f s.\n", time);
-
-        // запись в файл
-        char filename[256];
-        // sprintf(filename, "./data/%s.csv", experimentName);
-        sprintf(filename, "%s.csv", experimentName);
-
-        FILE *f = fopen(filename, "a");
-        if (f == NULL) 
-        {
-            printf("FileOpenError %s", filename);
-            exit(1);
-        }
-
-        fprintf(f, "%zu; %.3f\n", size, time);
-        fclose(f);
-    } 
-    else 
-    {
-        printf("Wrong!\n");
-        // вывод массива, который не смог быть отсортирован
-        outputArrayHex(innerBuffer, size);
-
-        exit(1);
-    }
-}
-
 void generateOrderedArray (int *a, size_t n)
 {
     for(size_t i = 0; i < n; i++)
@@ -192,7 +143,6 @@ void insertionSort (int *a, size_t n)
     for (int i = 0; i < n; i++)
     {
         int minPosition = i;
-
         for (int j = i + 1; j < n; j++)
         {
             if (a[minPosition] > a[j])
@@ -201,31 +151,36 @@ void insertionSort (int *a, size_t n)
             }
         }
 
-        int tmp = a[minPosition];
-        a[minPosition] = a[i];
-        a[i] = tmp;
+        int *a_min = &a[minPosition];
+        int *a_cur = &a[i];
+
+        int tmp = *a_min;
+        *a_min = *a_cur;
+        *a_cur = tmp;
     }
 }
 
 void brushSort (int *a, size_t n)
 {
-    // float factor = 1.25;
+    float factor = 1.05;
 	size_t step = n - 1;
     
 	while (step >= 1)
 	{
 		for (size_t i = 0; i + step < n; i++)
 		{
-			if (a[i] > a[i + step])
+            int *a_i = &a[i];
+            int *a_i_step = &a[i + step];
+			if (*a_i > *a_i_step)
 			{
-				int temp = a[i];
-                a[i] = a[i + step];
-                a[i + step] = temp;
+				int temp = *a_i;
+                *a_i = *a_i_step;
+                *a_i_step = temp;
 			}
 		}
 
-		// step = (size_t)((float)step/factor);
-        step--;
+	    step = (size_t)((float)step/factor);
+        //step--;
 	}
 }
 
@@ -251,26 +206,79 @@ uint8_t digit(int a, uint8_t n)
     return (uint8_t)(a >> shift);
 }
 
+void checkTime (void(*sortFunc)(int *, size_t), 
+                void (*generateFunc)(int *, size_t), 
+                size_t size, 
+                char *experimentName) 
+{
+    static size_t runCounter = 1;
+
+    // генерация последовательности
+    static int innerBuffer[MAX_BUFFER_SIZE];
+    generateFunc(innerBuffer, size);
+
+    printf("Run #%zu| ", runCounter++);
+    printf("Name: %s\n", experimentName);
+    double time;
+    TIME_TEST(
+    {
+        sortFunc(innerBuffer, size);
+    }, time);
+
+    printf("Status: ");
+    if (isOrdered(innerBuffer, size)) 
+    {
+        printf("OK! Time: %.3f s.\n", time);
+
+        // запись в файл
+        char filename[256];
+        // sprintf(filename, "./data/%s.csv", experimentName);
+        sprintf(filename, "%s.csv", experimentName);
+
+        FILE *f = fopen(filename, "a");
+        if (f == NULL) 
+        {
+            printf("FileOpenError %s", filename);
+            exit(1);
+        }
+
+        fprintf(f, "%zu, %.3f\n", size, time);
+        fclose(f);
+    } 
+    else 
+    {
+        printf("Wrong!\n");
+        // вывод массива, который не смог быть отсортирован
+        outputArrayHex(innerBuffer, size);
+
+        exit(1);
+    }
+}
+
 void radixSort (int *a, size_t n)
 {
     const size_t len = sizeof(int);     // длина числа
     const size_t radix = 256;           // количество чисел в разряде 2^8 // основание системы счисления
+    size_t basket_len = n;
     uint8_t d;
+
+    if (basket_len > 1500000)
+    {
+        basket_len = 1500000;
+    }
+
     int *b = malloc(sizeof(int) * radix),       // число чисел в корзине
-        *c = malloc(sizeof(int) * radix * n);   // корзины для сортировки radix
+        *c = malloc(sizeof(int) * radix * basket_len);   // корзины для сортировки radix
 
     for (size_t i = 0; i < len; i++)  // перебираем все разряды, начиная с нулевого
-    {        
-        for (size_t j = 0; j < radix; j++)
-        {                      
-            b[j] = 0; // пустой массив корзин
-        }
+    {   
+        memset (b, 0, sizeof(int) * radix); // пустой массив корзин b = 0  
 
         for (size_t j = 0; j < n; j++)
         {
             int val = a[i];
             d = digit(val, i);              // получаем цифру, стоящую на текущем разряде в каждом числе массива
-            int index = (d * n) + b[d];     // индекс записи
+            int index = (d * basket_len) + b[d];     // индекс записи
             c[index] = val;                 // отправляем число в промежуточный массив в корзину, которая совпадает со значением этой цифры
             b[d]++;                         // добавляем число чисел в корзине
         }
@@ -284,7 +292,7 @@ void radixSort (int *a, size_t n)
             int bj = b[j];
             while (k < bj)
             {
-                a[count++] = c[(j * n) + k];
+                a[count++] = c[(j * basket_len) + k];
                 k++;
             }
         }
@@ -298,11 +306,11 @@ void timeExperiment()
     // описание функций сортировки
     SortFunc sorts[] = 
     {
-        {bubbleSort, "bubbleSort"},
-        {selectionSort, "selectionSort"},
-        {insertionSort, "insertionSort"},
-        {brushSort, "brushSort"},
-        {shellSort, "shellSort"},
+        //{bubbleSort, "bubbleSort"},
+        //{selectionSort, "selectionSort"},
+        //{insertionSort, "insertionSort"},
+        //{brushSort, "brushSort"},
+        //{shellSort, "shellSort"},
         {radixSort, "radixSort"}
         // вы добавите свои сортировки
     };
@@ -321,7 +329,7 @@ void timeExperiment()
     const unsigned CASES_N = ARRAY_SIZE(generatingFuncs);
 
     // запись статистики в файл up to MAX_BUFFER_SIZE
-    for (size_t size = 10000; size <= 100000; size += 10000)
+    for (size_t size = 500000; size <= 5000000; size += 500000)
     {
         printf("------------------------------\n");
         printf("Size: %d\n", size);
