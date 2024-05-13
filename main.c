@@ -121,15 +121,48 @@ void bubbleSort (int *a, size_t n)
         int min = a[i];
         for (size_t j = i + 1; j < n; j++)
         {
-            if (min < a[j])
+            int *a_j = &a[j];
+
+            if (min < *a_j)
             {
-                min = a[j];
+                min = *a_j;
             }
 
             int temp = min;
-            min = a[j];
-            a[j] = temp;
+            min = *a_j;
+            *a_j = temp;
         }
+    }
+}
+
+void mySort (int *a, size_t n)
+{
+    int *start = &a[0];
+    int *end = &a[n];
+    int *min;
+    int *start1;
+
+    while (start < end)
+    {
+        // find min value in range start1 - end
+        min = start;
+        int *start1 = start;
+        while (start1 < end)
+        {
+            if (*min > *start1)
+            {
+                min = start1;
+            }
+            start1++;
+        }
+        // swap min to start
+        if (min > start)
+        {
+            int temp = *min;
+            *min = *start;
+            *start = temp;
+        }
+        start++;
     }
 }
 
@@ -526,12 +559,13 @@ void timeExperiment()
     // описание функций сортировки
     SortFunc sorts[] = 
     {
-        //{bubbleSort, "bubbleSort"},
-        //{selectionSort, "selectionSort"},
-        //{insertionSort, "insertionSort"},
-        //{brushSort, "brushSort"},
-        //{shellSort, "shellSort"},
-        {radixSort, "radixSort"}
+        {bubbleSort, "bubbleSort"},
+        {selectionSort, "selectionSort"},
+        {insertionSort, "insertionSort"},
+        {brushSort, "brushSort"},
+        {shellSort, "shellSort"},
+        {radixSort, "radixSort"},
+        {mySort, "mySort"}
         // вы добавите свои сортировки
     };
     const unsigned FUNCS_N = ARRAY_SIZE(sorts);
@@ -549,7 +583,7 @@ void timeExperiment()
     const unsigned CASES_N = ARRAY_SIZE(generatingFuncs);
 
     // запись статистики в файл up to MAX_BUFFER_SIZE
-    for (size_t size = 500000; size <= 5000000; size += 500000)
+    for (size_t size = 1000; size <= 10000; size += 1000)
     {
         printf("------------------------------\n");
         printf("Size: %d\n", size);
@@ -621,8 +655,8 @@ void timeExperimentNComp()
 
 int main() 
 {
-    // timeExperiment();
-    timeExperimentNComp();
+    timeExperiment();
+    //timeExperimentNComp();
 
     return 0;
 }
