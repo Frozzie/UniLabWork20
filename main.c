@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "matrix.h"
+#include "string_.h"
 
 typedef struct _query
 {
@@ -150,40 +151,86 @@ void shellSort (int *a, size_t n)
 int median (int *arr, size_t n)
 {
     shellSort(arr, n);
+    int ret;
 
-    return arr[n/2];
+    if(n % 2 == 0)
+    {
+        ret = (arr[n/2] + arr[n/2 + 1]) / 2;
+    }
+    else
+    {
+        ret = arr[n/2];
+    }
+
+    return ret;
 }
 
 void Task3 (size_t n, matrix mat)
 {
-    if(n % 2 != 0)
-    {
-        int border = n / 2;
-        int *arr = malloc(sizeof(int) * n * n);
+    int border = n / 2;
+    int *arr = malloc(sizeof(int) * n * n);
 
-        for(int i = border; i < mat.nRows - border; i++)
-        {
-            for(int j = border; j < mat.nCols - border; j++)
-            {   
-                int count = 0;
-                for(int k = i - border; k <= i + border; k++)
+    for(int i = border; i < mat.nRows - border; i++)
+    {
+        for(int j = border; j < mat.nCols - border; j++)
+        {   
+            int count = 0;
+            for(int k = i - border; k <= i + border; k++)
+            {
+                for(int s = j - border; s <= j + border; s++)
                 {
-                    for(int s = j - border; s <= j + border; s++)
-                    {
-                        arr[count++] = getElementMatrix(&mat, k, s);
-                    }
+                    arr[count++] = getElementMatrix(&mat, k, s);
                 }
-                int med = median(arr, n * n);
-                putElementMatrix(&mat, i, j, med);
             }
+
+            int med = median(arr, n * n);
+            putElementMatrix(&mat, i, j, med);
         }
-    
-        free(arr);
     }
+
+    free(arr);
 
     outputMatrix(&mat);
 }
 
+void subTask4(char *str)
+{
+    char *first_space = findSpace(str);
+    first_space++;
+
+    char *num = malloc(strlen(str));
+    char *words_begin = copy(str, first_space, num);
+    num[first_space - str] = 0;
+
+    BagOfWords words;
+    getBagOfWords(&words, first_space);
+
+    for(int i = 0; i < words.size; i++)
+    {
+        printf("%s", num);
+        for(int j = i; j < words.size; j++)
+        {
+            printWord(words.words[j]);
+            if(j < words.size - 1)
+            {
+                printf(".");
+            }
+        }
+
+        printf("\n");
+    }
+    printf("\n");
+
+    free(num);
+}
+
+void Task4(char **arrStr, size_t n)
+{
+    for(size_t i = 0; i < n; i++)
+    {
+        subTask4(arrStr[i]);
+    }
+}
 int main()
 {
     int n = 3, qn = 2;
@@ -200,9 +247,16 @@ int main()
         25, 35, 45,
         15, 25, 35
     };
-
     matrix mat1 = createMatrixFromArray(b, 3, 3);
     
+    char c2[] = {"900 google.mail.com\0"};
+    char c3[] = {"50 yahoo.com\0"};
+    char c4[] = {"1 intel.mail.com\0"};
+    char c5[] = {"5 wiki.org\0"};
+
+    char *arr[] = {c2, c3, c4, c5};
+    size_t arr_n = sizeof(arr) / sizeof(*arr);
+
     Task1(n, query, qn);
     printf("\n");
 
@@ -210,7 +264,9 @@ int main()
     printf("\n");
 
     Task3(3, mat1);
+    printf("\n");
 
+    Task4(arr, arr_n);
 
     freeMemMatrix(&mat1);
 }

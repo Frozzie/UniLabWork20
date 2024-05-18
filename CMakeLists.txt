@@ -6,6 +6,7 @@ set(CMAKE_C_STANDARD 11)
 set(SOURCE_EXE
     main.c
     matrix.c
+    string_.c
     )
     
 set(DIRECTORIES 
