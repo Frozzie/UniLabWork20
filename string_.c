@@ -115,7 +115,7 @@ char* findSpaceReverse(char *rbegin, const char *rend)
     return sym;
 }
 
-int strcmp(const char *lhs, const char *rhs)
+int strcmp1(const char *lhs, const char *rhs)
 {
     while(*lhs > 0 && *rhs > 0)
     {

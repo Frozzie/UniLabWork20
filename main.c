@@ -193,44 +193,61 @@ void Task3 (size_t n, matrix mat)
     outputMatrix(&mat);
 }
 
-void subTask4(char *str)
+#define MAX_ROWS 30
+#define MAX_STR_LEN 50
+typedef struct _mylink
 {
-    char *first_space = findSpace(str);
-    first_space++;
-
-    char *num = malloc(strlen(str));
-    char *words_begin = copy(str, first_space, num);
-    num[first_space - str] = 0;
-
-    BagOfWords words;
-    getBagOfWords(&words, first_space);
-
-    for(int i = 0; i < words.size; i++)
-    {
-        printf("%s", num);
-        for(int j = i; j < words.size; j++)
-        {
-            printWord(words.words[j]);
-            if(j < words.size - 1)
-            {
-                printf(".");
-            }
-        }
-
-        printf("\n");
-    }
-    printf("\n");
-
-    free(num);
-}
+    int count;
+    char str[MAX_STR_LEN];
+} mylink;
 
 void Task4(char **arrStr, size_t n)
 {
+    mylink arr_link[MAX_ROWS];
+    size_t link_size = 0;
+    char *str;
+    char *str_char;
+
+    // all input strings
     for(size_t i = 0; i < n; i++)
     {
-        subTask4(arrStr[i]);
+        str = arrStr[i];                    // pointer to current string
+        str_char = findSpace(str);          // p after num
+        
+
+        while(*str_char > 0)
+        {
+            str_char = findNonSpace(str_char);  // p to next word
+            strcpy(arr_link[link_size].str, str_char);  // save string to array
+            arr_link[link_size].count = atoi(str);      // save counter to array
+            bool flag = false;                          // find the same string
+
+            for (size_t n = 0; n < link_size; n++)      // check all prev words in array
+            {
+                if (strcmp (arr_link[n].str, arr_link[link_size].str) == 0)
+                {
+                    flag = true;
+                    arr_link[n].count += arr_link[link_size].count;
+                    break;
+                }
+            }
+
+            if (!flag) // string new - save string
+            {
+                link_size++;
+            }
+
+            str_char = findSpace(str_char);  // next word in string
+        }
+    }
+
+    // print all strings from array
+    for (size_t i = 0; i < link_size; i++)
+    {
+        printf ("%d %s\n", arr_link[i].count, arr_link[i].str);
     }
 }
+
 int main()
 {
     int n = 3, qn = 2;

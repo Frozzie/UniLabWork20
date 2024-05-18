@@ -23,7 +23,7 @@ char           *findNonSpace                    (char *begin);
 char           *findSpace                       (char *begin);
 char           *findNonSpaceReverse             (char *rbegin, const char *rend);
 char           *findSpaceReverse                (char *rbegin, const char *rend);
-int             strcmp                          (const char *lhs, const char *rhs);
+int             strcmp1                         (const char *lhs, const char *rhs);
 char           *copy                            (char *beginSource, const char *endSource, char *beginDestination);
 char           *copyStr                         (char *dest, char *src);
 char           *copyIf                          (char *beginSource, const char *endSource, char *beginDestination, bool (*f)(char));
