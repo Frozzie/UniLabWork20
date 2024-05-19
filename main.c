@@ -303,6 +303,90 @@ void Task5(matrix *mat)
     printf("%d", count);
 }
 
+typedef struct numbers
+{
+    int num;
+    bool present;
+} numbers;
+
+// return 0 if false
+int getInc (numbers *num, int cur_num)
+{
+
+}
+
+int getDec (numbers *num, int cur_num)
+{
+
+}
+
+void Task6(char *str)
+{
+    size_t size = strlen1(str);
+
+    char *order = malloc(sizeof(char) * (size + 2));
+    char *answ = malloc(sizeof(char) * (size + 1) + 1);
+    answ[size + 1] = 0;
+
+    for(size_t i = 0; i < 9; i++)
+    {
+        order[i] = '1' + i;
+    }
+    order[9] = 0;
+    size_t start = 10, end = 10, rev = 10;
+    size_t i;
+
+    for( i = 0; i < size; i++)
+    {
+        int mem_id;
+
+        if(str[i] == 'I')
+        {
+            if(i == end)
+            {
+                answ[i] = order[start];
+
+                if(rev > 0)
+                {
+                    rev--;
+                }
+            }
+            else
+            {
+                answ[i] = order[i];
+            }
+        }
+        else // Нашли D
+        {
+            if(i < start || i > end)
+            {
+                size_t index = 0;
+                start = i;
+
+                while(str[i + index] == 'D')
+                {
+                    index++;
+                }
+                end = i + index;
+
+                answ[i] = order[end];
+                rev = end - 1;
+            }
+            else
+            {
+                answ[i] = order[rev--];
+            }
+        }
+    }
+    answ[i] = order[rev];
+
+    printf("%s", answ);
+    free(order);
+}
+
+/*  
+    
+*/
 int main()
 {
     int n = 3, qn = 2;
@@ -336,6 +420,13 @@ int main()
     };
     matrix Task5_m = createMatrixFromArray(task5_data, 3, 3);
 
+    char task6_str1[] = {
+        "IIIDIDDD"
+    };
+    char task6_str2[] = {
+        "DDD"
+    };
+
     printf("Task 1: \n");
     Task1(n, query, qn);
     printf("\n");
@@ -356,6 +447,11 @@ int main()
     Task5(&Task5_m);
     printf("\n");
 
+    printf("Task 6: \n");
+    Task6(task6_str1);
+    printf("\n");
+    Task6(task6_str2);
+    printf("\n");
 
     freeMemMatrix(&mat1);
     freeMemMatrix(&Task5_m);
