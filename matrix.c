@@ -314,11 +314,11 @@ bool isSymmetricMatrix(matrix *m)
     return answ;
 }
 
-int getElementMatrix(matrix *m, int i, int j)
+int getElementMatrix(matrix *m, int n_row, int n_col)
 {
-    int *row = m->values[i];
+    int *row = m->values[n_row];
 
-    return row[j];
+    return row[n_col];
 }
 
 void putElementMatrix(matrix *m, int i, int j, int val)

@@ -248,6 +248,61 @@ void Task4(char **arrStr, size_t n)
     }
 }
 
+bool isMatrixCont0 (matrix *mat, size_t x0, size_t y0, size_t x_size, size_t y_size)
+{
+    bool answ = false;
+    for(size_t x = x0; x < x0 + x_size; x++)
+    {
+        for(size_t y = y0; y < y0 + y_size; y++)
+        {
+            if(getElementMatrix(mat, x, y) == 0)
+            {
+                answ = true;
+                break;
+            }
+        }
+
+        if(answ)
+        {
+            break;
+        }
+    }
+
+    return answ;
+}
+
+int countOfFittingMatrices (matrix *mat, size_t x_size, size_t y_size)
+{
+    int answ = 0;
+
+    for(size_t row = 0; row <= mat->nRows - y_size; row++)
+    {
+        for(size_t col = 0; col <= mat->nCols - x_size; col++)
+        {
+            if(!isMatrixCont0(mat, col, row, x_size, y_size))
+            {
+                answ++;
+            }
+        }
+    }
+
+    return answ;
+}
+
+void Task5(matrix *mat)
+{
+    int count = 0;
+    for(size_t row = 1; row <= mat->nRows; row++)
+    {
+        for(size_t col = 1; col <= mat->nCols; col++)
+        {
+            count += countOfFittingMatrices(mat, col, row);
+        }
+    }
+
+    printf("%d", count);
+}
+
 int main()
 {
     int n = 3, qn = 2;
@@ -274,16 +329,34 @@ int main()
     char *arr[] = {c2, c3, c4, c5};
     size_t arr_n = sizeof(arr) / sizeof(*arr);
 
+    int task5_data[] = {
+        1, 0, 1,
+        1, 1, 0,
+        1, 1, 0
+    };
+    matrix Task5_m = createMatrixFromArray(task5_data, 3, 3);
+
+    printf("Task 1: \n");
     Task1(n, query, qn);
     printf("\n");
 
+    printf("Task 2: \n");
     Task2(4, 3, a);
     printf("\n");
 
+    printf("Task 3: \n");
     Task3(3, mat1);
     printf("\n");
 
+    printf("Task 4: \n");
     Task4(arr, arr_n);
+    printf("\n");
+
+    printf("Task 5: \n");
+    Task5(&Task5_m);
+    printf("\n");
+
 
     freeMemMatrix(&mat1);
+    freeMemMatrix(&Task5_m);
 }
