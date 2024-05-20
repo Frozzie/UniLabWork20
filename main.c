@@ -4,6 +4,7 @@
 #include <time.h>
 #include <stdint.h>
 #include <string.h>
+#include <conio.h>
 #include "matrix.h"
 #include "string_.h"
 
@@ -512,7 +513,7 @@ void Task9(int argc, char **argv)
 {
     if (argc != 4) 
     {
-        printf ("Error: found %d arguments. Needs exactly 3", argc - 1);
+        printf ("Error for task9: found %d arguments. Needs exactly 3", argc - 1);
         return;
     }
     char *fileIn = malloc(strlen(argv[0])); // first argument is file name in
@@ -528,7 +529,7 @@ void Task9(int argc, char **argv)
 
     if (fIn == NULL || fOut == NULL)
     {
-        printf("ERROR\n");
+        printf("Error open files in task9\n");
     }
     else
     {
@@ -543,10 +544,54 @@ void Task9(int argc, char **argv)
                 fprintf (fOut, "%d ", num);
             }
         }
+        
+        fclose(fIn);
+        fclose(fOut);
     }
+}
 
-    fclose(fIn);
-    fclose(fOut);
+void Task10(int argc, char **argv)
+{
+    if (argc != 3) 
+    {
+        printf ("Error for task10: found %d arguments. Needs exactly 2", argc - 1);
+        return;
+    }
+    char *file = malloc(strlen(argv[0])); // first argument is file name in
+    strcpy(file, argv[1]);
+
+    int max_lines = atoi(argv[2]); // second argument is max num
+
+    FILE *f = fopen(file, "r");
+
+    if (f == NULL)
+    {
+        printf("Error open files in task10\n");
+    }
+    else
+    {
+        char buff[200];
+        char *read;
+
+        do
+        {
+            for(int i = 0; i < max_lines; i++)
+            {
+                read = fgets(buff, 200, f);
+
+                if(read == NULL)
+                {
+                    break;
+                }
+                else
+                {
+                    printf("%s", read);
+                }
+            }
+        }while(getch() == 3 || read != NULL);
+
+        fclose(f);
+    }
 }
 
 int main(int argc, char **argv)
@@ -592,33 +637,34 @@ int main(int argc, char **argv)
     int task8A_arr[3] = {0, 1, 2};
     char task8B_str[] = {"abap"};
     int task8B_arr[4] = {0, 3, 2, 1};
-    printf("Task 1: \n");
+
+    printf("Task 1:\n");
     Task1(n, query, qn);
     printf("\n");
 
-    printf("Task 2: \n");
+    printf("Task 2:\n");
     Task2(4, 3, a);
     printf("\n");
 
-    printf("Task 3: \n");
+    printf("Task 3:\n");
     Task3(3, mat1);
     printf("\n");
 
-    printf("Task 4: \n");
+    printf("Task 4:\n");
     Task4(arr, arr_n);
     printf("\n");
 
-    printf("Task 5: \n");
+    printf("Task 5:\n");
     Task5(&Task5_m);
     printf("\n \n");
 
-    printf("Task 6: \n");
+    printf("Task 6:\n");
     Task6(task6_str1);
     printf("\n");
     Task6(task6_str2);
     printf("\n\n");
 
-    printf("Task 7: \n");
+    printf("Task 7:\n");
     size_t size = sizeof (task7a_arr) / sizeof (int);
     Task7(task7a_arr, size);
     size = sizeof (task7b_arr) / sizeof (int);
@@ -626,13 +672,18 @@ int main(int argc, char **argv)
 
     printf("\n");
 
-    printf("Task 8: \n");
+    printf("Task 8:\n");
     Task8(task8A_str, task8A_arr);
     Task8(task8B_str, task8B_arr);
     printf("\n");
 
-    printf("Task 9: \n");
-    Task9(argc, argv);
+    printf("Task 9:\n");
+    // Task9(argc, argv);
+    printf("\n");
+
+    printf("Task 10:\n");
+    Task10(argc, argv);
+
     freeMemMatrix(&mat1);
     freeMemMatrix(&Task5_m);
 }
