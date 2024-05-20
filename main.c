@@ -384,10 +384,172 @@ void Task6(char *str)
     free(order);
 }
 
-/*  
-    
-*/
-int main()
+typedef struct rec_arr
+{
+    int     *arr;
+    int     val;
+    size_t  n;
+    size_t  level;
+    void    *l;
+    void    *r;
+} rec_arr;
+
+void recursive_push (rec_arr *t)
+{
+    if (t->n > 0)
+    {
+        size_t i_max = 0;
+        
+        for(size_t i = 0; i < t->n; i++)
+        {
+            if(t->arr[i] >= t->arr[i_max])
+            {
+                i_max = i;
+                t->val = t->arr[i];
+            }
+        }
+
+        size_t left_size = i_max;
+        size_t right_size = t->n - i_max - 1;
+
+        t->l = malloc (sizeof(rec_arr));
+        rec_arr *left = (rec_arr *)t->l;
+        left->arr = malloc (sizeof(int) * left_size);
+        memcpy (left->arr, t->arr, sizeof(int) * left_size);
+        left->n = left_size;
+        left->level = t->level + 1;
+        recursive_push (left);
+
+        t->r = malloc (sizeof(rec_arr));
+        rec_arr *right = (rec_arr *)t->r;
+        right->arr = malloc (sizeof(int) * right_size);
+        right->n = right_size;
+        memcpy (right->arr, &t->arr[i_max + 1], sizeof(int) * right_size);
+        right->level = t->level + 1;
+        recursive_push (right);
+    }
+    else
+    {
+        t->l = NULL;
+        t->r = NULL;
+        t->val = INT32_MAX;
+    }
+}
+
+bool print_level (rec_arr *t, int level)
+{
+    bool ret = false;
+    bool ret_l;
+    bool ret_r;
+
+    if (t != NULL)
+    {
+        if (t->level == level)
+        {
+            if (t->val == INT32_MAX)
+            {
+                printf ("null,");
+            }
+            else
+            {
+                printf ("%d,", t->val);
+                ret = true;
+            }  
+        }
+        else if (t->n > 1)
+        {
+            ret_l = print_level (t->l, level);
+            ret_r = print_level (t->r, level);
+            ret = ret_l || ret_r;
+        }
+    }
+
+    return ret;
+}
+
+
+
+void Task7(int *arr, size_t n)
+{
+    rec_arr t;
+    t.arr = malloc (sizeof(int) * n);
+    memcpy (t.arr, arr, sizeof(int) * n);
+    t.n = n;
+    t.level = 0;
+    t.l = NULL;
+    t.r = NULL;
+    recursive_push (&t);
+
+    // print tree from zero level
+    int level = 0;
+    bool level_flag = true;
+    while (level_flag)
+    {
+	    level_flag = print_level (&t, level);
+        level++;
+        // printf ("\n");
+    }
+    printf ("\n");
+    free (t.arr);
+}
+
+void Task8 (char *str, int *arr)
+{
+    size_t size = strlen(str);
+    char *output = malloc(sizeof(char) * size);
+
+    for(size_t i = 0; i < size; i++)
+    {
+        output[i] = str[arr[i]];
+    }
+
+    output[size] = 0;
+
+    printf("%s\n", output);
+}
+
+void Task9(int argc, char **argv)
+{
+    if (argc != 4) 
+    {
+        printf ("Error: found %d arguments. Needs exactly 3", argc - 1);
+        return;
+    }
+    char *fileIn = malloc(strlen(argv[0])); // first argument is file name in
+    strcpy(fileIn, argv[1]);
+
+    char *fileOut = malloc(strlen(argv[1])); // second argument is file name out
+    strcpy(fileOut, argv[2]);
+
+    int max_num = atoi(argv[3]); // third argument is max num
+
+    FILE *fIn = fopen(fileIn, "r");
+    FILE *fOut = fopen(fileOut, "w");
+
+    if (fIn == NULL || fOut == NULL)
+    {
+        printf("ERROR\n");
+    }
+    else
+    {
+        int num;
+        char buf[50];
+        while (fscanf (fIn, "%s ", buf) > 0)
+        {
+            num = atoi (buf);
+
+            if(num < max_num)
+            {
+                fprintf (fOut, "%d ", num);
+            }
+        }
+    }
+
+    fclose(fIn);
+    fclose(fOut);
+}
+
+int main(int argc, char **argv)
 {
     int n = 3, qn = 2;
     int a[] = {
@@ -420,13 +582,16 @@ int main()
     };
     matrix Task5_m = createMatrixFromArray(task5_data, 3, 3);
 
-    char task6_str1[] = {
-        "IIIDIDDD"
-    };
-    char task6_str2[] = {
-        "DDD"
-    };
+    char task6_str1[] = {"IIIDIDDD"};
+    char task6_str2[] = {"DDD"};
+    
+    int task7a_arr[] = {3, 2, 1, 6, 0, 5};
+    int task7b_arr[] = {3, 2, 1};
 
+    char task8A_str[] = {"abc"};
+    int task8A_arr[3] = {0, 1, 2};
+    char task8B_str[] = {"abap"};
+    int task8B_arr[4] = {0, 3, 2, 1};
     printf("Task 1: \n");
     Task1(n, query, qn);
     printf("\n");
@@ -445,14 +610,29 @@ int main()
 
     printf("Task 5: \n");
     Task5(&Task5_m);
-    printf("\n");
+    printf("\n \n");
 
     printf("Task 6: \n");
     Task6(task6_str1);
     printf("\n");
     Task6(task6_str2);
+    printf("\n\n");
+
+    printf("Task 7: \n");
+    size_t size = sizeof (task7a_arr) / sizeof (int);
+    Task7(task7a_arr, size);
+    size = sizeof (task7b_arr) / sizeof (int);
+    Task7(task7b_arr, size);
+
     printf("\n");
 
+    printf("Task 8: \n");
+    Task8(task8A_str, task8A_arr);
+    Task8(task8B_str, task8B_arr);
+    printf("\n");
+
+    printf("Task 9: \n");
+    Task9(argc, argv);
     freeMemMatrix(&mat1);
     freeMemMatrix(&Task5_m);
 }
