@@ -8,6 +8,8 @@
 #include "matrix.h"
 #include "string_.h"
 
+#define MAX_LEN_WORD 10
+
 typedef struct _query
 {
     size_t row1;
@@ -594,6 +596,60 @@ void Task10(int argc, char **argv)
     }
 }
 
+int findPref(char *dict, size_t size, char *pref, int n)
+{
+    int count = 0, line = -1;
+    for(int i = 0; i < size; i++)
+    {
+        if(strncmp(&dict[i * MAX_LEN_WORD], pref, strlen(pref)) == 0)
+        {
+            count++;
+
+            if(count == n)
+            {
+                line = i + 1;
+                break;
+            }
+        }
+    }
+
+    return line;
+}
+
+void Task11()
+{
+    FILE *f = fopen("Test11.txt", "r");
+    int result;
+
+    if (f == NULL)
+    {
+        printf("Error open files in task11\n");
+    }
+    else
+    {
+        int n, q;
+        fscanf(f, "%d %d", &n, &q);
+        char *dict = malloc(sizeof(char) * n * MAX_LEN_WORD);
+
+        for(int i = 0; i < n; i++)
+        {
+            fscanf(f, "%s", &dict[i * MAX_LEN_WORD]);
+        }
+
+        for(int i = 0; i < q; i++)
+        {
+            int count;
+            char pref[MAX_LEN_WORD];
+
+            fscanf(f, "%d %s", &count, pref);
+
+            result = findPref(dict, n, pref, count);
+
+            printf("%d\n", result);       
+        }
+    }
+}
+
 int main(int argc, char **argv)
 {
     int n = 3, qn = 2;
@@ -677,12 +733,17 @@ int main(int argc, char **argv)
     Task8(task8B_str, task8B_arr);
     printf("\n");
 
-    printf("Task 9:\n");
-    // Task9(argc, argv);
-    printf("\n");
+    //printf("Task 9:\n");
+    //Task9(argc, argv);
+    //printf("\n");
 
-    printf("Task 10:\n");
-    Task10(argc, argv);
+    //printf("Task 10:\n");
+    //Task10(argc, argv);
+    //printf("\n");
+
+    printf("Task 11:\n");
+    Task11();
+
 
     freeMemMatrix(&mat1);
     freeMemMatrix(&Task5_m);

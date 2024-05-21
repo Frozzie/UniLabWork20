@@ -1,0 +1,14 @@
+10 3
+aa
+aaa
+aab
+ab
+abc
+ac
+ba
+daa
+dab
+dadba
+4 a
+2 da
+4 da
